@@ -4,6 +4,10 @@
 
 # 🌊 Waylively
 
+[![Build AppImage](https://github.com/os-guy-original/waylively/actions/workflows/build-appimage.yml/badge.svg)](https://github.com/os-guy-original/waylively/actions/workflows/build-appimage.yml)
+[![Release AppImage](https://github.com/os-guy-original/waylively/actions/workflows/release-appimage.yml/badge.svg)](https://github.com/os-guy-original/waylively/actions/workflows/release-appimage.yml)
+[![Latest Release](https://img.shields.io/github/v/release/os-guy-original/waylively?display_name=tag)](https://github.com/os-guy-original/waylively/releases)
+
 **Native Live Wallpapers for Wayland**
 
 > ⚠️ **Early alpha** — tested on Hyprland. Other wlroots compositors should work but are untested.

@@ -67,15 +67,30 @@ jobs:
       - name: Smoke test AppImage CLI
         run: ./dist/Waylively-*.AppImage --help
 
+      - name: Generate release notes
+        id: notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          gh api \
+            --method POST \
+            -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/releases/generate-notes" \
+            -f tag_name="$TAG" \
+            -f target_commitish="$GITHUB_SHA" \
+            --jq '.body' > release-notes.md
+
       - name: Create or update GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.tag.outputs.tag }}
         run: |
           if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release edit "$TAG" --title "$TAG" --notes-file release-notes.md
             gh release upload "$TAG" dist/*.AppImage --clobber
           else
             gh release create "$TAG" dist/*.AppImage \
               --title "$TAG" \
-              --notes "Automated AppImage release for $TAG"
+              --notes-file release-notes.md
           fi
