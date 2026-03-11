@@ -37,6 +37,18 @@ This installs the latest AppImage to `~/.local/opt/waylively/`, adds launch wrap
 After install, launch `waylively-manager` and use the **Background Service** toggle,
 or enable it directly with `systemctl --user enable --now waylively.service`.
 
+To uninstall the AppImage install:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/os-guy-original/waylively/main/scripts/uninstall-appimage.sh | bash
+```
+
+To also remove user data (`~/.config/waylively` and `~/.local/share/waylively`):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/os-guy-original/waylively/main/scripts/uninstall-appimage.sh | bash -s -- --purge-data
+```
+
 ### Build AppImage manually
 
 From the repository root, or from anywhere via the script path:
