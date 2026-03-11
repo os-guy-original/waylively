@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Waylively Lantern Grid</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { overflow: hidden; background: #07090f; font-family: Inter, "Segoe UI", system-ui, sans-serif; }
+  #grid { position: fixed; inset: 0; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+  .row { display: flex; align-items: center; width: max-content; will-change: transform; }
+  .word {
+    flex: none;
+    display: block;
+    white-space: nowrap;
+    text-align: center;
+    text-transform: uppercase;
+    transition: color 90ms linear, text-shadow 90ms linear, transform 90ms linear;
+    user-select: none;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+<div id="grid"></div>
+<script>
+  const grid = document.getElementById('grid');
+  const probe = document.createElement('span');
+  const words = [];
+  const pointer = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+  const settings = {
+    displayText: 'LIVELY',
+    fontSpec: 'Inter Bold 28',
+    textColor: '#a8b6dc',
+    backgroundColor: '#07090f',
+    wordSpacing: 56,
+    rowShift: 54,
+    rowGap: 28,
+    glowRadius: 240,
+    glowStrength: 1,
+    patternMode: 1,
+    alternateRowOpacity: 0.22,
+  };
+
+  probe.style.position = 'fixed';
+  probe.style.visibility = 'hidden';
+  probe.style.pointerEvents = 'none';
+  probe.style.whiteSpace = 'nowrap';
+  document.body.appendChild(probe);
+
+  function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+  }
+
+  function numOr(value, fallback) {
+    const num = Number(value);
+    return Number.isFinite(num) ? num : fallback;
+  }
+
+  function hexToRgb(hex) {
+    const safe = String(hex || '').trim();
+    const normalized = safe.startsWith('#') ? safe.slice(1) : safe;
+    const full = normalized.length === 3
+      ? normalized.split('').map((ch) => ch + ch).join('')
+      : normalized.padEnd(6, '0').slice(0, 6);
+    return {
+      r: parseInt(full.slice(0, 2), 16) || 0,
+      g: parseInt(full.slice(2, 4), 16) || 0,
+      b: parseInt(full.slice(4, 6), 16) || 0,
+    };
+  }
+
+  function mixRgb(a, b, t) {
+    return {
+      r: Math.round(a.r + (b.r - a.r) * t),
+      g: Math.round(a.g + (b.g - a.g) * t),
+      b: Math.round(a.b + (b.b - a.b) * t),
+    };
+  }
+
+  function parseFontSpec(spec) {
+    const tokens = String(spec || 'Inter Bold 28').trim().split(/\s+/).filter(Boolean);
+    let size = parseFloat(tokens[tokens.length - 1]);
+    if (Number.isFinite(size)) {
+      tokens.pop();
+    } else {
+      size = 28;
+    }
+
+    let fontStyle = 'normal';
+    let fontWeight = '700';
+    const styleWords = new Set(['italic', 'oblique']);
+    const weightMap = {
+      thin: '100', 'extra-light': '200', ultralight: '200', light: '300', regular: '400',
+      book: '400', medium: '500', 'semi-bold': '600', demibold: '600', bold: '700',
+      'extra-bold': '800', ultrabold: '800', heavy: '900', black: '900'
+    };
+
+    const familyTokens = [];
+    for (const token of tokens) {
+      const key = token.toLowerCase();
+      if (styleWords.has(key)) {
+        fontStyle = key;
+      } else if (weightMap[key]) {
+        fontWeight = weightMap[key];
+      } else {
+        familyTokens.push(token);
+      }
+    }
+
+    return {
+      family: familyTokens.join(' ') || 'Inter',
+      style: fontStyle,
+      weight: fontWeight,
+      sizePx: Math.max(12, Math.round(size * 1.3333)),
+    };
+  }
+
+  function applyFont(el, font) {
+    el.style.fontFamily = `${font.family}, sans-serif`;
+    el.style.fontStyle = font.style;
+    el.style.fontWeight = font.weight;
+    el.style.fontSize = `${font.sizePx}px`;
+    el.style.letterSpacing = `${Math.max(1, font.sizePx * 0.16)}px`;
+    el.style.lineHeight = '1';
+  }
+
+  function getMetrics() {
+    const font = parseFontSpec(settings.fontSpec);
+    const text = (settings.displayText || 'LIVELY').trim() || 'LIVELY';
+    applyFont(probe, font);
+    probe.textContent = text;
+    const rect = probe.getBoundingClientRect();
+    return {
+      font,
+      text,
+      textWidth: Math.max(60, rect.width),
+      textHeight: Math.max(font.sizePx, rect.height || 0),
+      columnGap: clamp(numOr(settings.wordSpacing, 56), 12, 220),
+      rowGap: clamp(numOr(settings.rowGap, 28), 4, 140),
+      shift: clamp(numOr(settings.rowShift, 0), -320, 320),
+      glowRadius: clamp(numOr(settings.glowRadius, 240), 80, 480),
+      glowStrength: clamp(numOr(settings.glowStrength, 1), 0, 2),
+      patternMode: clamp(numOr(settings.patternMode, 0), 0, 2),
+      alternateRowOpacity: clamp(numOr(settings.alternateRowOpacity, 0), 0, 0.85),
+    };
+  }
+
+  function buildGrid() {
+    const metrics = getMetrics();
+    const padY = Math.max(20, metrics.rowGap + 10);
+    const padX = Math.max(24, metrics.columnGap * 0.7);
+    const rowHeight = metrics.textHeight + metrics.rowGap;
+    const rowCount = Math.max(6, Math.ceil((window.innerHeight + padY * 2) / rowHeight));
+    const colCount = Math.max(8, Math.ceil((window.innerWidth + Math.abs(metrics.shift) + padX * 2) / (metrics.textWidth + metrics.columnGap)) + 2);
+
+    grid.innerHTML = '';
+    words.length = 0;
+    grid.style.padding = `${padY}px ${padX}px`;
+    grid.style.gap = `${metrics.rowGap}px`;
+
+    for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+      const rowFactor = rowIndex % 2 ? (1 - metrics.alternateRowOpacity) : 1;
+      const waveOffset = Math.sin(rowIndex * 0.9) * metrics.shift;
+      const rowOffset = metrics.patternMode === 0
+        ? metrics.shift
+        : metrics.patternMode === 1
+          ? (rowIndex % 2 ? metrics.shift : 0)
+          : waveOffset;
+      const row = document.createElement('div');
+      row.className = 'row';
+      row.style.gap = `${metrics.columnGap}px`;
+      row.style.marginLeft = `${-Math.abs(metrics.shift)}px`;
+      row.style.paddingRight = `${Math.abs(metrics.shift)}px`;
+      row.style.transform = `translateX(${rowOffset}px)`;
+
+      for (let colIndex = 0; colIndex < colCount; colIndex++) {
+        const el = document.createElement('div');
+        el.className = 'word';
+        el.textContent = metrics.text;
+        el.dataset.rowOpacity = String(rowFactor);
+        applyFont(el, metrics.font);
+        row.appendChild(el);
+        words.push(el);
+      }
+
+      grid.appendChild(row);
+    }
+  }
+
+  function paint() {
+    const metrics = getMetrics();
+    const base = hexToRgb(settings.textColor);
+    const lantern = { r: 255, g: 244, b: 190 };
+
+    for (const el of words) {
+      const rect = el.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const distance = Math.hypot(pointer.x - cx, pointer.y - cy);
+      const glow = Math.max(0, 1 - distance / metrics.glowRadius) * metrics.glowStrength;
+      const glowClamped = Math.max(0, Math.min(glow, 1.5));
+      const mixed = mixRgb(base, lantern, Math.min(glowClamped * 0.45, 0.9));
+      const rowOpacity = Number(el.dataset.rowOpacity || 1);
+      el.style.color = `rgba(${mixed.r}, ${mixed.g}, ${mixed.b}, ${(0.16 + Math.min(glowClamped, 1) * 0.84) * rowOpacity})`;
+      el.style.textShadow = glowClamped > 0
+        ? `0 0 ${8 + glowClamped * 30}px rgba(255, 244, 190, ${Math.min(glowClamped * 0.85, 1)})`
+        : 'none';
+      el.style.transform = `scale(${1 + Math.min(glowClamped, 1) * 0.08})`;
+    }
+
+    requestAnimationFrame(paint);
+  }
+
+  function rebuildFromSettings() {
+    document.body.style.background = settings.backgroundColor || '#07090f';
+    buildGrid();
+  }
+
+  function livelyPropertyListener(name, val) {
+    if (name === 'displayText') settings.displayText = String(val || 'LIVELY');
+    if (name === 'fontSpec') settings.fontSpec = String(val || 'Inter Bold 28');
+    if (name === 'textColor') settings.textColor = String(val || '#a8b6dc');
+    if (name === 'backgroundColor') settings.backgroundColor = String(val || '#07090f');
+    if (name === 'wordSpacing') settings.wordSpacing = Number(val || 56);
+    if (name === 'rowShift') settings.rowShift = Number(val || 0);
+    if (name === 'rowGap') settings.rowGap = Number(val || 28);
+    if (name === 'glowRadius') settings.glowRadius = Number(val || 240);
+    if (name === 'glowStrength') settings.glowStrength = Number(val ?? 1);
+    if (name === 'patternMode') settings.patternMode = Number(val || 0);
+    if (name === 'alternateRowOpacity') settings.alternateRowOpacity = Number(val ?? 0);
+    rebuildFromSettings();
+  }
+
+  window.addEventListener('mousemove', (e) => {
+    pointer.x = e.clientX;
+    pointer.y = e.clientY;
+  });
+
+  window.addEventListener('resize', rebuildFromSettings);
+  rebuildFromSettings();
+  paint();
+</script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "waylively"
+version = "0.1.0"
+description = "A Wayland Live Wallpaper Engine and Manager"
+authors = [
+    {name = "Waylively Contributors"},
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "PyGObject"
+]
+
+[project.scripts]
+waylively = "waylively.cli:main"
+waylively-manager = "waylively.ui.app:main"
+waylively-daemon = "waylively.daemon.service:main"
+waylively-engine = "waylively.engine.renderer:main"
+waylively-screenshot = "waylively.screenshot:main"
+
+[tool.setuptools]
+packages = ["waylively", "waylively.daemon", "waylively.engine", "waylively.ui", "waylively.ui.components", "waylively.utils"]
+
+[project.gui-scripts]
+waylively-manager = "waylively.ui.app:main"

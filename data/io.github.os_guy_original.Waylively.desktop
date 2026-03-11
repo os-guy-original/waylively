@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Waylively
+Comment=Native Live Wallpaper Manager for Wayland
+Exec=waylively-manager
+Icon=io.github.os_guy_original.Waylively
+Terminal=false
+Type=Application
+Categories=Utility;GTK;
+Keywords=wallpaper;live;wayland;lively;
+StartupWMClass=io.github.os_guy_original.Waylively
+StartupNotify=true

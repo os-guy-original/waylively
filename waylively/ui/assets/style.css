@@ -1,0 +1,29 @@
+.card {
+    background-color: var(--window-bg-color, #ffffff);
+    border-radius: 12px;
+    border: 1px solid alpha(currentColor, 0.1);
+    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.card:hover {
+    background-color: alpha(currentColor, 0.05);
+    border-color: var(--accent-bg-color, #3584e4);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card picture {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    margin-bottom: 4px;
+}
+
+.card label {
+    font-weight: bold;
+}
+
+.card button {
+    border-radius: 16px;
+    padding: 4px 16px;
+    font-weight: 500;
+}

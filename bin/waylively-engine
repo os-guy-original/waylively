@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+import sys
+import os
+
+
+def _bootstrap_paths():
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    candidates = [
+        root,
+        os.path.join(root, "lib", f"python{sys.version_info.major}.{sys.version_info.minor}", "site-packages"),
+        os.path.join(root, "lib", "python3", "dist-packages"),
+    ]
+
+    for candidate in candidates:
+        if os.path.exists(os.path.join(candidate, "waylively")):
+            sys.path.insert(0, candidate)
+
+
+_bootstrap_paths()
+
+from waylively.engine.renderer import main
+
+if __name__ == '__main__':
+    sys.exit(main())

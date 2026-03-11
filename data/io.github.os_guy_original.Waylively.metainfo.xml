@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.os_guy_original.Waylively</id>
+  <name>Waylively</name>
+  <developer id="io.github.os_guy_original">
+    <name>Waylively Contributors</name>
+  </developer>
+  <summary>Native Live Wallpaper Manager for Wayland</summary>
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+
+  <description>
+    <p>
+      Waylively renders live wallpapers — HTML5, videos, and GIFs — directly
+      on your Wayland desktop background using gtk-layer-shell.
+    </p>
+    <p>Supports Lively Wallpaper packages, MP4, WebM, MKV, AVI, MOV, and GIF files.</p>
+  </description>
+
+  <url type="homepage">https://github.com/os-guy-original/waylively</url>
+  <url type="bugtracker">https://github.com/os-guy-original/waylively/issues</url>
+
+  <launchable type="desktop-id">io.github.os_guy_original.Waylively.desktop</launchable>
+
+  <content_rating type="oars-1.1" />
+
+  <releases>
+    <release version="0.1.0" date="2026-03-11">
+      <description><p>Initial alpha release.</p></description>
+    </release>
+  </releases>
+</component>

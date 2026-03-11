@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Waylively Default</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { overflow: hidden; background: #1a1b26; }
+  canvas { display: block; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; }
+  .logo-container {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    width: min(88vw, 640px);
+    text-align: center;
+    z-index: 10;
+    pointer-events: none;
+    user-select: none;
+  }
+  .logo-container svg {
+    display: block;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+    filter: drop-shadow(0 0 30px rgba(99, 160, 234, 0.4));
+  }
+  .text-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+  }
+  .app-name {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 42px; font-weight: 300; letter-spacing: 4px;
+    line-height: 1.08;
+    color: rgba(255, 255, 255, 0.85);
+    max-width: 100%;
+    text-shadow: 0 0 40px rgba(99, 160, 234, 0.3);
+  }
+  .slogan {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 16px; font-weight: 300; letter-spacing: 2px;
+    line-height: 1.3;
+    color: rgba(255, 255, 255, 0.45);
+    max-width: 100%;
+  }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div class="logo-container">
+  <!-- Inline the Waylively icon -->
+  <svg id="logo-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+    <defs>
+      <clipPath id="sc"><rect x="24" y="24" width="464" height="464" rx="100" ry="100"/></clipPath>
+      <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#E1E6FA"/><stop offset="100%" stop-color="#C5D3EB"/>
+      </linearGradient>
+      <linearGradient id="wg" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#62A0EA"/><stop offset="100%" stop-color="#3584E4"/>
+      </linearGradient>
+      <linearGradient id="dg" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#99C1F1"/><stop offset="100%" stop-color="#3584E4"/>
+      </linearGradient>
+      <linearGradient id="ag" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#8FF0A4"/><stop offset="100%" stop-color="#57E389"/>
+      </linearGradient>
+    </defs>
+    <g clip-path="url(#sc)">
+      <rect x="24" y="24" width="464" height="464" fill="url(#bg)"/>
+      <path d="M 0 350 C 150 250, 300 450, 520 280 L 520 520 L 0 520 Z" fill="url(#ag)" opacity="0.8"/>
+      <path d="M 0 420 C 180 300, 250 500, 520 360 L 520 520 L 0 520 Z" fill="url(#wg)"/>
+      <path d="M 256 120 C 256 120, 160 250, 160 300 A 96 96 0 0 0 352 300 C 352 250, 256 120, 256 120 Z" fill="url(#dg)"/>
+      <path d="M 220 250 C 220 250, 200 290, 220 330 C 230 340, 240 340, 240 340 C 210 320, 230 260, 230 260 Z" fill="#fff" opacity="0.6"/>
+    </g>
+  </svg>
+  <div class="text-stack">
+    <div class="app-name" id="app-name">WAYLIVELY</div>
+    <div class="slogan" id="app-slogan">Your desktop, alive.</div>
+  </div>
+</div>
+
+<script>
+// ── Mouse-glow particle canvas ──────────────────────────────────────
+
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+let W, H;
+let mouseX = -1000, mouseY = -1000;
+const logo = document.getElementById('logo-mark');
+const appName = document.getElementById('app-name');
+const slogan = document.getElementById('app-slogan');
+let glowIntensity = 0.15;
+let glowRadius = 200;
+let maxParticles = 120;
+let showLogo = true;
+let showName = true;
+let showSlogan = true;
+
+function applySettings() {
+  logo.style.display = showLogo ? 'block' : 'none';
+  appName.style.display = showName ? 'block' : 'none';
+  slogan.style.display = showSlogan ? 'block' : 'none';
+  while (particles.length > maxParticles) particles.shift();
+}
+
+function livelyPropertyListener(name, val) {
+  if (name === 'glowIntensity') glowIntensity = Math.max(0, Math.min(0.5, Number(val) || 0));
+  if (name === 'glowRadius') glowRadius = Math.max(50, Math.min(500, Number(val) || 200));
+  if (name === 'particleCount') maxParticles = Math.max(20, Math.min(300, Math.round(Number(val) || 120)));
+  if (name === 'showLogo') showLogo = Boolean(val);
+  if (name === 'showName') showName = Boolean(val);
+  if (name === 'showSlogan') showSlogan = Boolean(val);
+  applySettings();
+}
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+document.addEventListener('mousemove', e => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+});
+
+// Particle pool
+const particles = [];
+
+function spawnParticle(x, y) {
+  particles.push({
+    x, y,
+    vx: (Math.random() - 0.5) * 1.2,
+    vy: (Math.random() - 0.5) * 1.2,
+    r: Math.random() * 3 + 1,
+    life: 1.0,
+    decay: Math.random() * 0.015 + 0.005,
+    hue: 210 + Math.random() * 40,      // blue-ish
+  });
+  if (particles.length > maxParticles) particles.shift();
+}
+
+// Ambient floating dots
+const AMBIENT = 50;
+const ambients = [];
+for (let i = 0; i < AMBIENT; i++) {
+  ambients.push({
+    x: Math.random() * 3000,
+    y: Math.random() * 2000,
+    r: Math.random() * 1.5 + 0.5,
+    speed: Math.random() * 0.3 + 0.1,
+    angle: Math.random() * Math.PI * 2,
+    alpha: Math.random() * 0.3 + 0.05,
+  });
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+
+  // Background gradient
+  const grad = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.max(W, H) * 0.7);
+  grad.addColorStop(0, '#1e2030');
+  grad.addColorStop(1, '#12131e');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Mouse glow
+  if (mouseX > 0) {
+    const glow = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, glowRadius);
+    glow.addColorStop(0, `rgba(99, 160, 234, ${glowIntensity})`);
+    glow.addColorStop(0.5, `rgba(99, 160, 234, ${glowIntensity / 3})`);
+    glow.addColorStop(1, 'rgba(99, 160, 234, 0.0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, W, H);
+
+    // Spawn particles near mouse
+    if (Math.random() > 0.3) {
+      spawnParticle(
+        mouseX + (Math.random() - 0.5) * 60,
+        mouseY + (Math.random() - 0.5) * 60
+      );
+    }
+  }
+
+  // Draw ambient dots
+  for (const a of ambients) {
+    a.x += Math.cos(a.angle) * a.speed;
+    a.y += Math.sin(a.angle) * a.speed;
+    a.angle += (Math.random() - 0.5) * 0.02;
+
+    if (a.x < 0) a.x = W;
+    if (a.x > W) a.x = 0;
+    if (a.y < 0) a.y = H;
+    if (a.y > H) a.y = 0;
+
+    ctx.beginPath();
+    ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(180, 200, 240, ${a.alpha})`;
+    ctx.fill();
+  }
+
+  // Draw particles
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life -= p.decay;
+
+    if (p.life <= 0) {
+      particles.splice(i, 1);
+      continue;
+    }
+
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r * p.life, 0, Math.PI * 2);
+    ctx.fillStyle = `hsla(${p.hue}, 70%, 70%, ${p.life * 0.6})`;
+    ctx.fill();
+  }
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+applySettings();
+</script>
+</body>
+</html>

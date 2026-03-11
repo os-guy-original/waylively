@@ -1,0 +1,41 @@
+{
+  "glowIntensity": {
+    "type": "slider",
+    "value": 0.15,
+    "min": 0.0,
+    "max": 0.5,
+    "step": 0.01,
+    "text": "Mouse Glow Intensity"
+  },
+  "glowRadius": {
+    "type": "slider",
+    "value": 200,
+    "min": 50,
+    "max": 500,
+    "step": 10,
+    "text": "Glow Radius"
+  },
+  "particleCount": {
+    "type": "slider",
+    "value": 120,
+    "min": 20,
+    "max": 300,
+    "step": 10,
+    "text": "Max Particles"
+  },
+  "showLogo": {
+    "type": "checkbox",
+    "value": true,
+    "text": "Show Logo"
+  },
+  "showName": {
+    "type": "checkbox",
+    "value": true,
+    "text": "Show Name"
+  },
+  "showSlogan": {
+    "type": "checkbox",
+    "value": true,
+    "text": "Show Slogan"
+  }
+}

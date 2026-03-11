@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <!-- Clip Path for the Squircle -->
+    <clipPath id="squircleClip">
+      <rect x="24" y="24" width="464" height="464" rx="100" ry="100" />
+    </clipPath>
+
+    <!-- Adwaita Lighter Pastel Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E1E6FA" /> <!-- Soft light blue-lavender -->
+      <stop offset="100%" stop-color="#C5D3EB" />
+    </linearGradient>
+
+    <!-- Foreground Wave Gradient -->
+    <linearGradient id="waveGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#62A0EA" /> <!-- GNOME Blue 3 -->
+      <stop offset="100%" stop-color="#3584E4" /> <!-- GNOME Blue 4 -->
+    </linearGradient>
+
+    <!-- Drop/Highlight Gradient -->
+    <linearGradient id="dropGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#99C1F1" /> <!-- GNOME Blue 2 -->
+      <stop offset="100%" stop-color="#3584E4" /> <!-- GNOME Blue 4 -->
+    </linearGradient>
+    
+    <!-- Accent Wave Gradient (Teal/Mint magic) -->
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8FF0A4" /> <!-- GNOME Green 2 -->
+      <stop offset="100%" stop-color="#57E389" /> <!-- GNOME Green 3 -->
+    </linearGradient>
+  </defs>
+
+  <!-- Masked group to ensure nothing spills out of the squircle -->
+  <g clip-path="url(#squircleClip)">
+      <!-- Background Fill -->
+      <rect x="24" y="24" width="464" height="464" fill="url(#bgGrad)" />
+
+      <!-- Background Wave (accent green/teal) -->
+      <path d="M 0 350 C 150 250, 300 450, 520 280 L 520 520 L 0 520 Z" fill="url(#accentGrad)" opacity="0.8" />
+
+      <!-- Foreground Wave -->
+      <path d="M 0 420 C 180 300, 250 500, 520 360 L 520 520 L 0 520 Z" fill="url(#waveGrad)" />
+
+      <!-- The Magic Glowing Droplet -->
+      <path d="M 256 120 C 256 120, 160 250, 160 300 A 96 96 0 0 0 352 300 C 352 250, 256 120, 256 120 Z" fill="url(#dropGrad)" />
+
+      <!-- Droplet reflection highlight -->
+      <path d="M 220 250 C 220 250, 200 290, 220 330 C 230 340, 240 340, 240 340 C 210 320, 230 260, 230 260 Z" fill="#ffffff" opacity="0.6" />
+  </g>
+</svg>

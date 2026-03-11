@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Waylively Aurora Orbits</title>
+<style>
+  html, body, canvas { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #070b13; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+  const canvas = document.getElementById('c');
+  const ctx = canvas.getContext('2d');
+  const mouse = { x: 0, y: 0 };
+  const orbs = Array.from({ length: 18 }, (_, i) => ({
+    orbit: 90 + i * 20,
+    size: 4 + (i % 4) * 3,
+    speed: 0.001 + i * 0.00016,
+    angle: i * 0.45,
+    hue: 190 + i * 7,
+  }));
+
+  function resize() {
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+    mouse.x = innerWidth / 2;
+    mouse.y = innerHeight / 2;
+  }
+
+  function draw(t) {
+    ctx.fillStyle = '#070b13';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const cx = canvas.width / 2 + (mouse.x - canvas.width / 2) * 0.03;
+    const cy = canvas.height / 2 + (mouse.y - canvas.height / 2) * 0.03;
+
+    for (const orb of orbs) {
+      const pulse = 1 + Math.sin(t * 0.0012 + orb.angle) * 0.08;
+      const rx = orb.orbit * pulse;
+      const ry = orb.orbit * 0.54 * pulse;
+      const x = cx + Math.cos(t * orb.speed + orb.angle) * rx;
+      const y = cy + Math.sin(t * orb.speed * 1.35 + orb.angle) * ry;
+
+      ctx.strokeStyle = `hsla(${orb.hue}, 72%, 68%, 0.13)`;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rx, ry, orb.angle * 0.15, 0, Math.PI * 2);
+      ctx.stroke();
+
+      const glow = ctx.createRadialGradient(x, y, 0, x, y, orb.size * 7);
+      glow.addColorStop(0, `hsla(${orb.hue}, 90%, 72%, 0.95)`);
+      glow.addColorStop(0.35, `hsla(${orb.hue}, 90%, 70%, 0.35)`);
+      glow.addColorStop(1, `hsla(${orb.hue}, 90%, 70%, 0)`);
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(x, y, orb.size * 7, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+  addEventListener('resize', resize);
+  resize();
+  requestAnimationFrame(draw);
+</script>
+</body>
+</html>
