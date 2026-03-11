@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="waylively/ui/assets/icon.png" alt="Waylively icon" width="128">
+</p>
+
 # 🌊 Waylively
 
 **Native Live Wallpapers for Wayland**
