@@ -9,6 +9,8 @@ APPIMAGE_PATH="${APP_DIR}/Waylively.AppImage"
 DESKTOP_PATH="${DATA_HOME}/applications/io.github.os_guy_original.Waylively.desktop"
 ICON_PATH="${DATA_HOME}/icons/hicolor/128x128/apps/io.github.os_guy_original.Waylively.png"
 SERVICE_PATH="${CONFIG_HOME}/systemd/user/waylively.service"
+AUTOSTART_PATH="${CONFIG_HOME}/autostart/waylively.desktop"
+
 WRAPPERS=(
   "${BIN_DIR}/waylively"
   "${BIN_DIR}/waylively-manager"
@@ -36,10 +38,18 @@ for arg in "$@"; do
 done
 
 if command -v systemctl >/dev/null 2>&1; then
-  systemctl --user disable --now waylively.service >/dev/null 2>&1 || true
+  if [ -f "$SERVICE_PATH" ]; then
+    systemctl --user disable --now waylively.service >/dev/null 2>&1 || true
+  fi
+elif command -v rc-service >/dev/null 2>&1 || [ -x "/sbin/openrc-run" ]; then
+  if command -v pkill >/dev/null 2>&1; then
+    pkill -f "Waylively.AppImage" >/dev/null 2>&1 || true
+    pkill -f "waylively-daemon" >/dev/null 2>&1 || true
+    pkill -f "waylively-engine" >/dev/null 2>&1 || true
+  fi
 fi
 
-rm -f "$APPIMAGE_PATH" "$DESKTOP_PATH" "$ICON_PATH" "$SERVICE_PATH"
+rm -f "$APPIMAGE_PATH" "$DESKTOP_PATH" "$ICON_PATH" "$SERVICE_PATH" "$AUTOSTART_PATH"
 for path in "${WRAPPERS[@]}"; do
   rm -f "$path"
 done

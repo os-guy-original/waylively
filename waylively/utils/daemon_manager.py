@@ -11,8 +11,7 @@ def _get_manager():
     return _manager
 
 
-def ensure_systemd_dir() -> bool:
-    """Legacy compatibility - no longer needed for OpenRC."""
+def ensure_service_dir() -> bool:
     manager = _get_manager()
     if hasattr(manager, '_ensure_dir'):
         return manager._ensure_dir()

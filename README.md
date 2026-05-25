@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="waylively/ui/assets/icon.png" alt="Waylively icon" width="128">
+<img src="waylively/ui/assets/icon.png" alt="Waylively icon" width="128">
 </p>
 
 # 🌊 Waylively
@@ -31,11 +31,23 @@ curl -fsSL https://raw.githubusercontent.com/os-guy-original/waylively/main/scri
 ```
 
 This installs the latest AppImage to `~/.local/opt/waylively/`, adds launch wrappers in
-`~/.local/bin/`, creates a desktop entry, and installs a user systemd unit at
-`~/.config/systemd/user/waylively.service`.
+`~/.local/bin/`, and creates a desktop entry. The install script auto-detects your service
+manager:
+
+- **systemd** — installs a user service unit at `~/.config/systemd/user/waylively.service`
+- **OpenRC** — registers an XDG autostart entry at `~/.config/autostart/waylively.desktop`
 
 After install, launch `waylively-manager` and use the **Background Service** toggle,
-or enable it directly with `systemctl --user enable --now waylively.service`.
+or enable it directly depending on your service manager:
+
+- **systemd**:
+  ```bash
+  systemctl --user enable --now waylively.service
+  ```
+- **OpenRC**:
+  ```bash
+  ~/.local/bin/waylively-daemon
+  ```
 
 To uninstall the AppImage install:
 
