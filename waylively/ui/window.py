@@ -203,7 +203,7 @@ class WaylivelyWindow(Adw.ApplicationWindow):
             application_name="Waylively",
             application_icon=icon_name,
             developer_name="Waylively Contributors",
-            version="0.1.0-alpha",
+            version="0.2.0",
             copyright="© 2026 Waylively Contributors",
             license_type=Gtk.License.MIT_X11,
             comments="A native Live Wallpaper manager for Wayland compositors.\n\n"
